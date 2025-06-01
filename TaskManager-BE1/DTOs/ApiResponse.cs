@@ -1,4 +1,4 @@
-namespace TaskManager
+namespace TaskManager_BE1.DTOs
 {
 
     public class ApiResponse<T>
