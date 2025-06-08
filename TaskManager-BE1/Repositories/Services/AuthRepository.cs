@@ -55,6 +55,7 @@ namespace TaskManager.Repositories.Services
             {
                 Username = user.UserName,
                 FirstName = user.FirstName,
+                Birthdate=user.BirthDate,
                 LastName = user.LastName,
                 Token = token
             };
