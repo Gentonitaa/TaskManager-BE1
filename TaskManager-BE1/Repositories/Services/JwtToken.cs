@@ -37,6 +37,7 @@ namespace TaskManager.Repositories.Services
             var token = new JwtSecurityToken(
                 issuer: jwtSettings["Issuer"],
                 audience: jwtSettings["Audience"],
+                expires: DateTime.UtcNow.AddHours(Convert.ToDouble(jwtSettings["ExpiresInMinutes"])),
                 signingCredentials: credentials);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
