@@ -4,7 +4,7 @@
 		<TargetFramework>net8.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<RootNamespace>TaskManager_BE1</RootNamespace>
+		<RootNamespace>TaskManager</RootNamespace>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -91,10 +91,6 @@
 		<PackageReference Include="System.Text.Encodings.Web" Version="9.0.5" />
 		<PackageReference Include="System.Text.Json" Version="9.0.5" />
 		<PackageReference Include="System.Windows.Extensions" Version="9.0.5" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Folder Include="DataContext\Migrations\" />
 	</ItemGroup>
 
 </Project>

@@ -1,4 +1,4 @@
-using TaskManager_BE1.DTOs;
+using TaskManager.DTOs;
 
 namespace TaskManager.Repositories.Interfaces
 {

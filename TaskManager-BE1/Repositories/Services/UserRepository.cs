@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using TaskManager.DataContext.Models;
 using TaskManager.DTOs;
 using TaskManager.Repositories.Interfaces;
-using TaskManager_BE1.DTOs;
+using TaskManager.DTOs;
 using TaskManager.DataContext.Models;
 using TaskManager.DTOs;
 using TaskManager.Repositories.Interfaces;
@@ -12,14 +12,14 @@ namespace TaskManager.Repositories.Services
     public class UserRepository : IUserRepository
     {
         private readonly UserManager<User> _userManager;
-        private readonly JwtCheck _jwtCheck;
+     //   private readonly JwtCheck _jwtCheck;
 
-        public UserRepository(UserManager<User> userManager, JwtCheck jwtCheck)
+        public UserRepository(UserManager<User> userManager/*, JwtCheck jwtCheck*/)
         {
             _userManager = userManager;
-            _jwtCheck = jwtCheck;
+          //  _jwtCheck = jwtCheck;
         }
-        public async Task<ApiResponse<string>> ChangePassword(string userId, ChangePasswordRequestDto changePasswordDto, string token)
+        public async Task<ApiResponse<string>> ChangePassword(string userId, ChangePasswordRequestDto changePasswordDto/*, string token*/)
         {
 
             var user = await _userManager.FindByIdAsync(userId);
@@ -43,7 +43,7 @@ namespace TaskManager.Repositories.Services
 
                 return ApiResponseHelper.Error<string>(errors, "Password change failed");
             }
-            _jwtCheck.Add(token);
+          //  _jwtCheck.Add(token);
             return ApiResponseHelper.Success<string>("Password changed successfully");
         }
     }

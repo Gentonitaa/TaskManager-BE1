@@ -2,7 +2,7 @@ using Azure.Core;
 using Microsoft.AspNetCore.Identity;
 using TaskManager.DataContext.Models;
 using TaskManager.Repositories.Interfaces;
-using TaskManager_BE1.DTOs;
+using TaskManager.DTOs;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;

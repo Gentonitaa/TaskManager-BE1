@@ -32,6 +32,7 @@ namespace TaskManager.Repositories.Services
                 new(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new(ClaimTypes.Name, user.FirstName + " "+user.LastName),
                 new(ClaimTypes.Email, user.UserName),
+                new("SecurityStamp", user.SecurityStamp),
             };
 
             var token = new JwtSecurityToken(

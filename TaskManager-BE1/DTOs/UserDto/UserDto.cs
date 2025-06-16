@@ -1,4 +1,4 @@
-namespace TaskManager_BE1.DTOs.UserDto
+namespace TaskManager.DTOs.UserDto
 {
     public class UserDto
     {

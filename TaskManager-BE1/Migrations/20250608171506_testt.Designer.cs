@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace TaskManager_BE1.Migrations
+namespace TaskManager.Migrations
 {
     [DbContext(typeof(AppDbContext))]
     [Migration("20250608171506_testt")]
