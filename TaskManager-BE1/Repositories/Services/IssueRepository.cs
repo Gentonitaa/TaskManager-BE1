@@ -84,6 +84,18 @@ namespace TaskManager.Repositories.Services
                 });
             }
 
+            //assigneId
+            if (!string.IsNullOrWhiteSpace(editIssueDto.AssigneeId))
+            {
+                var assignee = await _context.Users.FindAsync(editIssueDto.AssigneeId);
+                if (assignee == null)
+                {
+                    return ApiResponseHelper.Error<IssueResponseDto>(new List<ApiError> {
+                    new ApiError{Field = "AssigneeId", Message="Assignee not found"}
+                });
+                }
+            }
+
             issue.Title = editIssueDto.Title;
             issue.Description = editIssueDto.Description;
             issue.AssigneeId = editIssueDto.AssigneeId;
@@ -121,6 +133,7 @@ namespace TaskManager.Repositories.Services
             }
 
             issue.IsDeleted = true;
+            issue.UpdatedAt = DateTime.UtcNow;
 
             _context.Issues.Update(issue);
             await _context.SaveChangesAsync();
