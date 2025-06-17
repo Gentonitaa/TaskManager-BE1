@@ -4,6 +4,7 @@ using System.Security.Claims;
 using TaskManager.DTOs;
 using TaskManager.DTOs.IssueDto;
 using TaskManager.Repositories.Interfaces;
+using TaskManager.DTOs.CommentDto;
 
 namespace TaskManager.Controllers
 {
@@ -31,8 +32,7 @@ namespace TaskManager.Controllers
             if (!result.Status)
                 return BadRequest(result);
 
-            return CreatedAtAction(nameof(CreateIssue), new { id = result.Data.Id }, result.Data);
-
+            return CreatedAtAction(nameof(GetIssueById), new { id = result.Data.Id }, result);
         }
 
         [HttpPut("{id}")]
@@ -42,6 +42,27 @@ namespace TaskManager.Controllers
 
             if (!result.Status)
                 return BadRequest(result);
+
+            return Ok(result);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteIssue(string id)
+        {
+            var result = await _issueRepository.DeleteIssueAsync(id);
+
+            if (!result.Status)
+                return BadRequest(result);
+
+            return Ok(result);
+        }
+        [HttpGet("{id}")] 
+        public async Task<IActionResult> GetIssueById(string id)
+        {
+            var result = await _issueRepository.GetIssueByIdAsync(id);
+
+            if (!result.Status)
+                return NotFound(result);
 
             return Ok(result);
         }

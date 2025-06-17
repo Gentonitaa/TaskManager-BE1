@@ -1,19 +1,19 @@
 namespace TaskManager.DataContext;
-    public class Enums
+public class Enums
 {
     public enum IssueStatus
     {
-        ToDo,
-        Inprogress,
-        Review,
-        Done
+        ToDo = 1,
+        Inprogress = 2,
+        Review = 3,
+        Done = 4
     }
 
     public enum IssuePriority
     {
-        Low=1,
-        Medium=2,
-        High=3,
-        Critical=4
+        Low = 1,
+        Medium = 2,
+        High = 3,
+        Critical = 4
     }
 }
