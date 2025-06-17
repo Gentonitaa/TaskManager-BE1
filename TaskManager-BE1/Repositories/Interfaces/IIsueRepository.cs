@@ -1,5 +1,6 @@
-using TaskManager.DTOs;
+using TaskManager.DataContext;
 using TaskManager.DataContext.Models; 
+using TaskManager.DTOs;
 using TaskManager.DTOs;
 using TaskManager.DTOs.IssueDto;
 
@@ -14,5 +15,6 @@ namespace TaskManager.Repositories.Interfaces
         Task<ApiResponse<GetIssueByIdDto>> GetIssueByIdAsync(string id);
 
         Task<ApiResponse<List<IssueItemsDto>>> GetAllIssuesAsync();
+        Task<ApiResponse<string>> UpdateIssueStatusAsync(string issueId, Enums.IssueStatus status);
     }
 }

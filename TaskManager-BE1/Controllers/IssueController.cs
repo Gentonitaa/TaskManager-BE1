@@ -66,5 +66,16 @@ namespace TaskManager.Controllers
 
             return Ok(result);
         }
+
+        [HttpPut("{id}/status")] 
+        public async Task<IActionResult> UpdateIssueStatus(string id, [FromBody] UpdateIssueStatusDto updateStatusDto)
+        {
+            var result = await _issueRepository.UpdateIssueStatusAsync(id, updateStatusDto.Status);
+
+            if (!result.Status)
+                return NotFound(result);
+
+            return Ok(result);
+        }
     }
 }

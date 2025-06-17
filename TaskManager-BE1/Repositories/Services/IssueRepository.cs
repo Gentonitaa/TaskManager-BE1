@@ -181,5 +181,32 @@ namespace TaskManager.Repositories.Services
 
             return ApiResponseHelper.Success(issues);
         }
+        public async Task<ApiResponse<string>> UpdateIssueStatusAsync(string issueId, Enums.IssueStatus status)
+        {
+            var issue = await _context.Issues.FindAsync(issueId);
+
+            if (issue == null || issue.IsDeleted)
+            {
+                return ApiResponseHelper.Error<string>(new List<ApiError>
+                {
+                    new ApiError {Field = "Issue", Message = "Issue not found"}
+});
+            }
+
+            if (!Enum.IsDefined(typeof(Enums.IssueStatus), status))
+            {
+                return ApiResponseHelper.Error<string>(new List<ApiError>
+                {
+                    new ApiError{ Field= "Status", Message = "Status Not Valid"}
+                });
+            }
+
+            issue.Status = status;
+
+            _context.Issues.Update(issue);
+            await _context.SaveChangesAsync();
+
+            return ApiResponseHelper.Success("Issue Status updated successfully");
+        }
     }
 }
