@@ -31,7 +31,7 @@ namespace TaskManager.Controllers
             if (!result.Status)
                 return BadRequest(result);
 
-            return CreatedAtAction(nameof(CreateIssue), new { id = result.Data.Id }, result.Data);
+            return CreatedAtAction(nameof(GetIssueById), new { id = result.Data.Id }, result);
 
         }
 
@@ -42,6 +42,16 @@ namespace TaskManager.Controllers
 
             if (!result.Status)
                 return BadRequest(result);
+
+            return Ok(result);
+        }
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetIssueById(string id)
+        {
+            var result = await _issueRepository.GetIssueByIdAsync(id);
+
+            if (!result.Status)
+                return NotFound(result);
 
             return Ok(result);
         }

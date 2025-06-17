@@ -30,7 +30,7 @@ namespace TaskManager.DataContext.Models
         public Enums.IssuePriority Priority { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public DateTime UpdateAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
         public bool IsDeleted { get; set; } = false;
         public ICollection<Comment> Comments { get; set; }
 

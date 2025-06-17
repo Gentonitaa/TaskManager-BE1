@@ -219,7 +219,7 @@ namespace TaskManager.DataContext.Migrations
                     .HasMaxLength(255)
                     .HasColumnType("nvarchar(255)");
 
-                b.Property<DateTime?>("UpdateAt")
+                b.Property<DateTime?>("UpdatedAt")
                     .HasColumnType("datetime2");
 
                 b.HasKey("Id");
