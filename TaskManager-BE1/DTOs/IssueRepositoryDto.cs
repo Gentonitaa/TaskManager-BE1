@@ -1,4 +1,4 @@
-namespace TaskManager.Repositories
+namespace TaskManager.DTOs.IssueDto
 {
     public class IssueResponseDto
 {

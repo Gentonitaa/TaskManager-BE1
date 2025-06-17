@@ -1,10 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-using TaskManager.DataContext;
-using TaskManager.DataContext.Models;
-using TaskManager.DTOs;
-using TaskManager.DTOs.IssueDto;
-using TaskManager.Repositories.Interfaces;
-using System.ComponentModel;
 using TaskManager.DataContext;
 using TaskManager.DataContext.Models;
 using TaskManager.DTOs;
@@ -23,27 +16,10 @@ namespace TaskManager.Repositories.Services
         }
         public async Task<ApiResponse<IssueResponseDto>> CreateIssueAsync(CreateIssueDto createIssueDto, string userId)
         {
-            if (string.IsNullOrWhiteSpace(createIssueDto.Title) || !Enum.IsDefined(typeof(Enums.IssuePriority), createIssueDto.Priority))
-            {
-                return ApiResponseHelper.Error<IssueResponseDto>(new List<ApiError>
-                {
-                    new ApiError {Field= "Validation", Message= "Validation Error"}
-                }, "Validation Failed");
-            }
-
-            if (!string.IsNullOrWhiteSpace(createIssueDto.AssigneeId))
-            {
-                var assignee = await _context.Users.FindAsync(createIssueDto.AssigneeId);
-                if (assignee == null)
-                {
-                    return ApiResponseHelper.Error<IssueResponseDto>(new List<ApiError>
-                    {
-                         new ApiError { Field = "AssigneeId", Message = "Assignee not found" }
-                    });
-                }
-            }
-
-
+            if (string.IsNullOrWhiteSpace(createIssueDto.Title) || createIssueDto.Title.Length > 255 || string.IsNullOrWhiteSpace(createIssueDto.Description))
+                return ApiResponseHelper.Error<IssueResponseDto>(new List<ApiError> {
+                 new ApiError{Field = "Validation", Message="Validation error"}
+                });
 
             var issue = new Issue
             {
@@ -64,8 +40,6 @@ namespace TaskManager.Repositories.Services
             });
         }
 
-
-
         public async Task<ApiResponse<IssueResponseDto>> EditIssueAsync(string issueId, EditIssueDto editIssueDto)
         {
             var issue = await _context.Issues.FindAsync(issueId);
@@ -74,7 +48,7 @@ namespace TaskManager.Repositories.Services
             {
                 return ApiResponseHelper.Error<IssueResponseDto>(new List<ApiError> {
                  new ApiError{Field = "Issue", Message="Issue not found"}
-                });
+});
             }
 
             if (string.IsNullOrEmpty(editIssueDto.Title) || editIssueDto.Title.Length > 255 || !Enum.IsDefined(typeof(Enums.IssueStatus), editIssueDto.Status) || !Enum.IsDefined(typeof(Enums.IssuePriority), editIssueDto.Priority))
@@ -89,7 +63,6 @@ namespace TaskManager.Repositories.Services
             issue.AssigneeId = editIssueDto.AssigneeId;
             issue.Status = editIssueDto.Status;
             issue.Priority = editIssueDto.Priority;
-            issue.UpdatedAt = DateTime.UtcNow;
 
             _context.Issues.Update(issue);
             await _context.SaveChangesAsync();
@@ -100,67 +73,6 @@ namespace TaskManager.Repositories.Services
                 Message = "Issue updated successfully"
             });
 
-        }
-
-        public async Task<ApiResponse<string>> DeleteIssueAsync(string issueId)
-        {
-            var issue = await _context.Issues.FindAsync(issueId);
-
-            if (issue == null)
-            {
-                return ApiResponseHelper.Error<string>(new List<ApiError> {
-                 new ApiError{Field = "Issue", Message="Issue not found"}
-                });
-            }
-
-            if (issue.IsDeleted)
-            {
-                return ApiResponseHelper.Error<string>(new List<ApiError> {
-                 new ApiError{Field = "Issue", Message="Issue already deleted"}
-                });
-            }
-
-            issue.IsDeleted = true;
-
-            _context.Issues.Update(issue);
-            await _context.SaveChangesAsync();
-
-            return ApiResponseHelper.Success("Issue Deleted Successfully");
-        }
-
-        public async Task<ApiResponse<GetIssueByIdDto>> GetIssueByIdAsync(string id)
-        {
-            var issue = await _context.Issues.Include(i => i.Comments).ThenInclude(c => c.Author).FirstOrDefaultAsync(i => i.Id == id && !i.IsDeleted);
-
-            if (issue == null)
-            {
-                return ApiResponseHelper.Error<GetIssueByIdDto>(new List<ApiError>
-                {
-                    new ApiError {Field = "Issue", Message = "Issue not found"}
-                });
-            }
-
-            var response = new GetIssueByIdDto
-            {
-                Id = issue.Id,
-                Title = issue.Title,
-                Description = issue.Description,
-                ReporterId = issue.ReporterId,
-                AssigneeId = issue.AssigneeId,
-                Status = issue.Status,
-                Priority = issue.Priority,
-                CreatedAt = issue.CreatedAt,
-                UpdatedAt = issue.UpdatedAt ?? default(DateTime),
-                Comments = issue.Comments.Select(c => new DTOs.CommentDto.CommentDto
-                {
-                    Id = c.Id,
-                    Content = c.Content,
-                    AuthorName = $"{c.Author.FirstName} {c.Author.LastName}",
-                    CreatedAt = c.CreatedAt
-                }).ToList()
-            };
-
-            return ApiResponseHelper.Success(response);
         }
     }
 }

@@ -1,5 +1,5 @@
 using TaskManager.DTOs;
-using TaskManager.DataContext.Models;
+using TaskManager.DataContext.Models; 
 using TaskManager.DTOs;
 using TaskManager.DTOs.IssueDto;
 
@@ -11,6 +11,6 @@ namespace TaskManager.Repositories.Interfaces
 
         Task<ApiResponse<IssueResponseDto>> EditIssueAsync(string issueId, EditIssueDto editIssueDto);
         Task<ApiResponse<string>> DeleteIssueAsync(string issueId);
-        Task<ApiResponse<GetIssueByIdDto>> GetIssueByIdAsync(string id);
+
     }
 }
