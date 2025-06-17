@@ -10,5 +10,7 @@ namespace TaskManager.Repositories.Interfaces
         Task<ApiResponse<IssueResponseDto>> CreateIssueAsync(CreateIssueDto createIssueDto, string id);
 
         Task<ApiResponse<IssueResponseDto>> EditIssueAsync(string issueId, EditIssueDto editIssueDto);
+        Task<ApiResponse<string>> DeleteIssueAsync(string issueId);
+
     }
 }
