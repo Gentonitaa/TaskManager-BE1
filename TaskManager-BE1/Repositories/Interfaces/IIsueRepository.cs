@@ -13,5 +13,6 @@ namespace TaskManager.Repositories.Interfaces
         Task<ApiResponse<string>> DeleteIssueAsync(string issueId);
         Task<ApiResponse<GetIssueByIdDto>> GetIssueByIdAsync(string id);
 
+        Task<ApiResponse<List<IssueItemsDto>>> GetAllIssuesAsync();
     }
 }

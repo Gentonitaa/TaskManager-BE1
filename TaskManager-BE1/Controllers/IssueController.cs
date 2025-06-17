@@ -55,5 +55,16 @@ namespace TaskManager.Controllers
 
             return Ok(result);
         }
+
+        [HttpGet] 
+        public async Task<IActionResult> GetAllIssues()
+        {
+            var result = await _issueRepository.GetAllIssuesAsync();
+
+            if (!result.Status)
+                return NotFound(result);
+
+            return Ok(result);
+        }
     }
 }

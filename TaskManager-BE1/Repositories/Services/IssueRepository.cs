@@ -1,10 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using System.ComponentModel;
-using TaskManager.DataContext;
-using TaskManager.DataContext.Models;
-using TaskManager.DTOs;
-using TaskManager.DTOs.IssueDto;
-using TaskManager.Repositories.Interfaces;
 using TaskManager.DataContext;
 using TaskManager.DataContext.Models;
 using TaskManager.DTOs;
@@ -174,6 +168,18 @@ namespace TaskManager.Repositories.Services
             };
 
             return ApiResponseHelper.Success(response);
+        }
+
+        public async Task<ApiResponse<List<IssueItemsDto>>> GetAllIssuesAsync()
+        {
+            var issues = await _context.Issues.Where(i => !i.IsDeleted)
+                    .Select(i => new IssueItemsDto
+                    {
+                        Id = i.Id,
+                        Title = i.Title
+                    }).ToListAsync();
+
+            return ApiResponseHelper.Success(issues);
         }
     }
 }
