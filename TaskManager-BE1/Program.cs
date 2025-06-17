@@ -7,6 +7,7 @@ using System.Text;
 using TaskManager.DataContext.Models;
 using TaskManager.Repositories.Interfaces;
 using TaskManager.Repositories.Services;
+using System.Text.Json.Serialization;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -35,10 +36,15 @@ namespace TaskManager
             builder.Services.AddScoped<IAuthRepository, AuthRepository>();
             builder.Services.AddScoped<IJwtToken, JwtToken>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IIssueRepository, IssueRepository>();
+            //  builder.Services.AddSingleton<JwtCheck>();
 
-          //  builder.Services.AddSingleton<JwtCheck>();
-
-
+            //allow enum
+            builder.Services.AddControllers()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
             //identityuser
             builder.Services.AddIdentity<User, IdentityRole>()
                 .AddEntityFrameworkStores<AppDbContext>()

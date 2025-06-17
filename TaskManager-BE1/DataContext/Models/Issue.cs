@@ -6,6 +6,10 @@ namespace TaskManager.DataContext.Models
 {
     public class Issue
     {
+        public Issue()  
+        {
+            Id=Guid.NewGuid().ToString();
+        }
         [Key]
         public string Id { get; set; }
 
@@ -26,7 +30,7 @@ namespace TaskManager.DataContext.Models
         public Enums.IssuePriority Priority { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public DateTime UpdateAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdateAt { get; set; }
         public bool IsDeleted { get; set; } = false;
         public ICollection<Comment> Comments { get; set; }
 

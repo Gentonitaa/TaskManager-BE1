@@ -1,4 +1,5 @@
 using TaskManager.DTOs;
+using TaskManager.DTOs.UserDto;
 
 namespace TaskManager.Repositories.Interfaces
 {

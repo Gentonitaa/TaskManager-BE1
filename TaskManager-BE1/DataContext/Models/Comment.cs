@@ -4,15 +4,15 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TaskManager.DataContext.Models
 {
-    public class Comments
+    public class Comment
     {
         [Key]
-        public Guid Id { get; set; }
+        public string Id { get; set; }
 
         [Required]
-        public Guid IssueId { get; set; }
+        public string IssueId { get; set; }
         [Required]
-        public Guid AuthorId { get; set; }
+        public string AuthorId { get; set; }
 
         [Required]
         public string Content { get; set; }

@@ -7,7 +7,7 @@ using TaskManager.DTOs;
 using TaskManager.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using TaskManager.DTOs;
+using TaskManager.DTOs.UserDto;
 using TaskManager.Repositories.Interfaces;
 
 namespace TaskManager.Controllers

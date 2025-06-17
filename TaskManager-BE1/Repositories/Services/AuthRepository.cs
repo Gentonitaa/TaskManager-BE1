@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using TaskManager.DataContext.Models;
 using TaskManager.Repositories.Interfaces;
 using TaskManager.DTOs;
+using TaskManager.DTOs.UserDto;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;

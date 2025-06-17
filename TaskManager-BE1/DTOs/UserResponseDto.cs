@@ -1,4 +1,4 @@
-﻿namespace TaskManager.DTOs
+﻿namespace TaskManager.DTOs.UserDto
 {
     public class UserResponseDto
     {
