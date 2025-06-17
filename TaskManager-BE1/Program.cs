@@ -39,12 +39,7 @@ namespace TaskManager
             builder.Services.AddScoped<IIssueRepository, IssueRepository>();
             //  builder.Services.AddSingleton<JwtCheck>();
 
-            //allow enum
-            builder.Services.AddControllers()
-            .AddJsonOptions(options =>
-            {
-                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-            });
+      
             //identityuser
             builder.Services.AddIdentity<User, IdentityRole>()
                 .AddEntityFrameworkStores<AppDbContext>()

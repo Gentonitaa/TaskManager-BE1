@@ -1,14 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using TaskManager.DataContext.Models;
-using TaskManager.DTOs;
-using TaskManager.DTOs.IssueDto;
-using TaskManager.Repositories.Interfaces;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
-using TaskManager.DataContext.Models;
 using TaskManager.DTOs;
 using TaskManager.DTOs.IssueDto;
 using TaskManager.Repositories.Interfaces;
@@ -40,6 +32,18 @@ namespace TaskManager.Controllers
                 return BadRequest(result);
 
             return CreatedAtAction(nameof(CreateIssue), new { id = result.Data.Id }, result.Data);
+
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> EditIssue(string id, [FromBody] EditIssueDto editIssueDto)
+        {
+            var result = await _issueRepository.EditIssueAsync(id, editIssueDto);
+
+            if (!result.Status)
+                return BadRequest(result);
+
+            return Ok(result);
         }
     }
 }
