@@ -5,7 +5,7 @@
 namespace TaskManager.Migrations
 {
     /// <inheritdoc />
-    public partial class initttt : Migration
+    public partial class FirstCleanMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

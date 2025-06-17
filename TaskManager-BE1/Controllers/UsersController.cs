@@ -23,9 +23,9 @@ namespace TaskManager.Controllers
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequestDto changePasswordDto)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            var authHeader = Request.Headers["Authorization"].ToString();
+           // var authHeader = Request.Headers["Authorization"].ToString();
 
-            var token = authHeader.Substring("Bearer ".Length).Trim();
+          //  var token = authHeader.Substring("Bearer ".Length).Trim();
             var result = await _userRepository.ChangePassword(userId, changePasswordDto/*, token*/);
             return Ok(result);
 
