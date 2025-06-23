@@ -185,7 +185,7 @@ namespace TaskManager.Repositories.Services
 
             if (Enum.IsDefined(typeof(Enums.IssueStatus), searchIssueDto.Status))
             {
-                issues = issues.Where(x => x.Status == searchIssueDto.Status);
+                issues.Where(x => x.Status == searchIssueDto.Status);
             }
 
             var result = await issues.ToListAsync();
@@ -293,6 +293,33 @@ namespace TaskManager.Repositories.Services
             await _context.SaveChangesAsync();
 
             return ApiResponseHelper.Success("Issue Assignee updated successfully");
+        }
+
+        public async Task<ApiResponse<UserIssueNumberDto>> GetUserIssueNumberAsync(string userId)
+        {
+            var user = await _context.Users.FindAsync(userId);
+
+            if (user == null)
+            {
+                return ApiResponseHelper.Error<UserIssueNumberDto>(new List<ApiError>
+                {
+                    new ApiError{Field = "UserId" , Message = "UserId not found" }
+});
+            }
+
+            var userIssues = await _context.Issues
+                .Where(i => i.AssigneeId == userId && !i.IsDeleted)
+                .ToListAsync();
+
+            var result = new UserIssueNumberDto
+            {
+                ToDo = userIssues.Count(i => i.Status == Enums.IssueStatus.ToDo),
+                InProgress = userIssues.Count(i => i.Status == Enums.IssueStatus.Inprogress),
+                Review = userIssues.Count(i => i.Status == Enums.IssueStatus.Review),
+                Done = userIssues.Count(i => i.Status == Enums.IssueStatus.Done)
+            };
+
+            return ApiResponseHelper.Success(result);
         }
     }
 }
