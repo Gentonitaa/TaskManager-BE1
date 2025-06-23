@@ -19,8 +19,33 @@ namespace TaskManager
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")).EnableSensitiveDataLogging().EnableDetailedErrors());
             builder.Services.AddControllers();
 
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(c => 
+            {
+                c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+                    Description = "Enter  your token in the text input below.\n\nExample: '12345abcdef'",
+                });
 
+                c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+              {
+                  {
+                      new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                      {
+                          Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                          {
+                              Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                              Id = "Bearer"
+                          }
+                      },
+                      new string[] { }
+                  }
+              });
+            });
             builder.Services.AddScoped<IAuthRepository, AuthRepository>();
             builder.Services.AddScoped<IJwtToken, JwtToken>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
