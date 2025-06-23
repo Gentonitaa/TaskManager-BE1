@@ -295,7 +295,7 @@ namespace TaskManager.Repositories.Services
             return ApiResponseHelper.Success("Issue Assignee updated successfully");
         }
 
-        public async Task<ApiResponse<UserIssueNumberDto>> GetUserIssueNumberAsync(string userId)
+        public async Task<ApiResponse<UserIssueNumberDto>> UserIssueCountAsync(string userId)
         {
             var user = await _context.Users.FindAsync(userId);
 

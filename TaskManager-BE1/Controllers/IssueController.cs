@@ -56,10 +56,10 @@ namespace TaskManager.Controllers
             return Ok(result);
         }
 
-        [HttpGet] 
-        public async Task<IActionResult> GetAllIssues()
+        [HttpPost("GetAllIssues")]
+        public async Task<IActionResult> GetAllIssues(SearchIssueDto searchIssueDto)
         {
-            var result = await _issueRepository.GetAllIssuesAsync();
+            var result = await _issueRepository.GetAllIssuesAsync(searchIssueDto);
 
             if (!result.Status)
                 return NotFound(result);
@@ -67,15 +67,19 @@ namespace TaskManager.Controllers
             return Ok(result);
         }
 
-        [HttpPut("{id}/status")] 
-        public async Task<IActionResult> UpdateIssueStatus(string id, [FromBody] UpdateIssueStatusDto updateStatusDto)
+        [HttpGet("user/issue-count")] 
+        public async Task<IActionResult> UserIssueCount()
         {
-            var result = await _issueRepository.UpdateIssueStatusAsync(id, updateStatusDto.Status);
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized(ApiResponseHelper.Failure<string>("User is not authenticated"));
 
+            var result = await _issueRepository.UserIssueCountAsync(userId);
             if (!result.Status)
                 return NotFound(result);
 
             return Ok(result);
         }
+
     }
 }

@@ -1,7 +1,5 @@
-using TaskManager.DataContext;
-using TaskManager.DataContext.Models; 
+using TaskManager.DataContext; 
 using TaskManager.DTOs;
-using TaskManager.DTOs.UserDto;
 using TaskManager.DTOs.IssueDto;
 
 namespace TaskManager.Repositories.Interfaces
@@ -15,6 +13,6 @@ namespace TaskManager.Repositories.Interfaces
         Task<ApiResponse<GroupedIssueDto>> GetAllIssuesAsync(SearchIssueDto searchIssueDto);
         Task<ApiResponse<string>> UpdateIssueStatusAsync(string issueId, Enums.IssueStatus status);
         Task<ApiResponse<string>> ChangeIssueAssigneeAsync(string issueId, string assigneeId);
-        Task<ApiResponse<UserIssueNumberDto>> GetUserIssueNumberAsync(string userId);
+        Task<ApiResponse<UserIssueNumberDto>> UserIssueCountAsync(string userId);
     }
 }
