@@ -200,6 +200,7 @@ namespace TaskManager.Repositories.Services
                                 Id = i.Id,
                                 Title = i.Title,
                                 AssigneeId = i.AssigneeId,
+                                Status = i.Status,
                                 FullName = i.Assignee != null ? i.Assignee.FirstName + " " + i.Assignee.LastName : ""
                             }).ToList(),
 
@@ -210,6 +211,7 @@ namespace TaskManager.Repositories.Services
                                Id = i.Id,
                                Title = i.Title,
                                AssigneeId = i.AssigneeId,
+                               Status = i.Status,
                                FullName = i.Assignee != null ? i.Assignee.FirstName + " " + i.Assignee.LastName : ""
                            }).ToList(),
 
@@ -220,6 +222,7 @@ namespace TaskManager.Repositories.Services
                                Id = i.Id,
                                Title = i.Title,
                                AssigneeId = i.AssigneeId,
+                               Status = i.Status,
                                FullName = i.Assignee != null ? i.Assignee.FirstName + " " + i.Assignee.LastName : ""
                            }).ToList(),
 
@@ -230,6 +233,7 @@ namespace TaskManager.Repositories.Services
                                 Id = i.Id,
                                 Title = i.Title,
                                 AssigneeId = i.AssigneeId,
+                                Status = i.Status,
                                 FullName = i.Assignee != null ? i.Assignee.FirstName + " " + i.Assignee.LastName : ""
                             }).ToList()
             };
