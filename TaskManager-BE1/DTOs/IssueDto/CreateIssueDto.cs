@@ -15,6 +15,7 @@ namespace TaskManager.DTOs.IssueDto
         public string? AssigneeId { get; set; }
 
         public Enums.IssuePriority Priority { get; set; }
+        public Enums.IssueStatus Status { get; set; } = Enums.IssueStatus.ToDo;
 
     }
 }

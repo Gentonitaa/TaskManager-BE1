@@ -44,7 +44,8 @@ namespace TaskManager.Repositories.Services
                 Description = createIssueDto.Description,
                 AssigneeId = createIssueDto.AssigneeId ?? null,
                 Priority = createIssueDto.Priority,
-                ReporterId = userId
+                ReporterId = userId,
+                Status = createIssueDto.Status
             };
 
             _context.Issues.Add(issue);
@@ -299,13 +300,7 @@ namespace TaskManager.Repositories.Services
         {
             var user = await _context.Users.FindAsync(userId);
 
-            if (user == null)
-            {
-                return ApiResponseHelper.Error<UserIssueNumberDto>(new List<ApiError>
-                {
-                    new ApiError{Field = "UserId" , Message = "UserId not found" }
-});
-            }
+           
 
             var userIssues = await _context.Issues
                 .Where(i => i.AssigneeId == userId && !i.IsDeleted)
