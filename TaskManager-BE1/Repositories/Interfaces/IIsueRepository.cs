@@ -16,5 +16,6 @@ namespace TaskManager.Repositories.Interfaces
 
         Task<ApiResponse<GroupedIssueDto>> GetAllIssuesAsync();
         Task<ApiResponse<string>> UpdateIssueStatusAsync(string issueId, Enums.IssueStatus status);
+        Task<ApiResponse<string>> ChangeIssueAssigneeAsync(string issueId, string assigneeId);
     }
 }
