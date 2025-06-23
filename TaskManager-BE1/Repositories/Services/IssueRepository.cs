@@ -170,17 +170,32 @@ namespace TaskManager.Repositories.Services
             return ApiResponseHelper.Success(response);
         }
 
-        public async Task<ApiResponse<List<IssueItemsDto>>> GetAllIssuesAsync()
+        public async Task<ApiResponse<GroupedIssueDto>> GetAllIssuesAsync()
         {
-            var issues = await _context.Issues.Where(i => !i.IsDeleted)
-                    .Select(i => new IssueItemsDto
-                    {
-                        Id = i.Id,
-                        Title = i.Title
-                    }).ToListAsync();
+            var issues = await _context.Issues.Where(i => !i.IsDeleted).ToListAsync();
 
-            return ApiResponseHelper.Success(issues);
+        var groupedIssues = new GroupedIssueDto
+        {
+            ToDo = issues
+            .Where(i => i.Status == Enums.IssueStatus.ToDo)
+            .Select(i => new IssueItemsDto { Id = i.Id, Title = i.Title }).ToList(),
+
+            Inprogress = issues
+            .Where(i => i.Status == Enums.IssueStatus.Inprogress)
+            .Select(i => new IssueItemsDto { Id = i.Id, Title = i.Title }).ToList(),
+
+            Review = issues
+            .Where(i => i.Status == Enums.IssueStatus.Review)
+            .Select(i => new IssueItemsDto { Id = i.Id, Title = i.Title }).ToList(),
+
+            Done = issues
+            .Where(i => i.Status == Enums.IssueStatus.Done)
+            .Select(i => new IssueItemsDto { Id = i.Id, Title = i.Title }).ToList()
+        };
+
+            return ApiResponseHelper.Success(groupedIssues);
         }
+        
         public async Task<ApiResponse<string>> UpdateIssueStatusAsync(string issueId, Enums.IssueStatus status)
         {
             var issue = await _context.Issues.FindAsync(issueId);
