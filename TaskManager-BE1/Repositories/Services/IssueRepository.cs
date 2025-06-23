@@ -38,7 +38,6 @@ namespace TaskManager.Repositories.Services
             }
 
 
-
             var issue = new Issue
             {
                 Title = createIssueDto.Title,
@@ -57,8 +56,6 @@ namespace TaskManager.Repositories.Services
                 Message = "Issue created successfully"
             });
         }
-
-
 
         public async Task<ApiResponse<IssueResponseDto>> EditIssueAsync(string issueId, EditIssueDto editIssueDto)
         {
@@ -170,32 +167,75 @@ namespace TaskManager.Repositories.Services
             return ApiResponseHelper.Success(response);
         }
 
-        public async Task<ApiResponse<GroupedIssueDto>> GetAllIssuesAsync()
+        public async Task<ApiResponse<GroupedIssueDto>> GetAllIssuesAsync(SearchIssueDto searchIssueDto)
         {
-            var issues = await _context.Issues.Where(i => !i.IsDeleted).ToListAsync();
+            var issues = _context.Issues.Include(i => i.Assignee).Where(i => !i.IsDeleted);
 
-        var groupedIssues = new GroupedIssueDto
-        {
-            ToDo = issues
-            .Where(i => i.Status == Enums.IssueStatus.ToDo)
-            .Select(i => new IssueItemsDto { Id = i.Id, Title = i.Title }).ToList(),
 
-            Inprogress = issues
-            .Where(i => i.Status == Enums.IssueStatus.Inprogress)
-            .Select(i => new IssueItemsDto { Id = i.Id, Title = i.Title }).ToList(),
+            if (!string.IsNullOrEmpty(searchIssueDto.Text))
+            {
+                issues = issues.Where(x => x.Title.Contains(searchIssueDto.Text));
+            }
 
-            Review = issues
-            .Where(i => i.Status == Enums.IssueStatus.Review)
-            .Select(i => new IssueItemsDto { Id = i.Id, Title = i.Title }).ToList(),
+            if (searchIssueDto.UserIds.Any())
+            {
+                issues.Where(x => searchIssueDto.UserIds.Any(i => i == x.AssigneeId));
+            }
 
-            Done = issues
-            .Where(i => i.Status == Enums.IssueStatus.Done)
-            .Select(i => new IssueItemsDto { Id = i.Id, Title = i.Title }).ToList()
-        };
+
+            if (Enum.IsDefined(typeof(Enums.IssueStatus), searchIssueDto.Status))
+            {
+                issues = issues.Where(x => x.Status == searchIssueDto.Status);
+            }
+
+            var result = await issues.ToListAsync();
+
+            var groupedIssues = new GroupedIssueDto
+            {
+                ToDo = result
+                            .Where(i => i.Status == Enums.IssueStatus.ToDo)
+                            .Select(i => new IssueItemsDto
+                            {
+                                Id = i.Id,
+                                Title = i.Title,
+                                AssigneeId = i.AssigneeId,
+                                FullName = i.Assignee != null ? i.Assignee.FirstName + " " + i.Assignee.LastName : ""
+                            }).ToList(),
+
+                Inprogress = result
+                            .Where(i => i.Status == Enums.IssueStatus.Inprogress)
+                           .Select(i => new IssueItemsDto
+                           {
+                               Id = i.Id,
+                               Title = i.Title,
+                               AssigneeId = i.AssigneeId,
+                               FullName = i.Assignee != null ? i.Assignee.FirstName + " " + i.Assignee.LastName : ""
+                           }).ToList(),
+
+                Review = result
+                            .Where(i => i.Status == Enums.IssueStatus.Review)
+                           .Select(i => new IssueItemsDto
+                           {
+                               Id = i.Id,
+                               Title = i.Title,
+                               AssigneeId = i.AssigneeId,
+                               FullName = i.Assignee != null ? i.Assignee.FirstName + " " + i.Assignee.LastName : ""
+                           }).ToList(),
+
+                Done = result
+                            .Where(i => i.Status == Enums.IssueStatus.Done)
+                            .Select(i => new IssueItemsDto
+                            {
+                                Id = i.Id,
+                                Title = i.Title,
+                                AssigneeId = i.AssigneeId,
+                                FullName = i.Assignee != null ? i.Assignee.FirstName + " " + i.Assignee.LastName : ""
+                            }).ToList()
+            };
 
             return ApiResponseHelper.Success(groupedIssues);
         }
-        
+
         public async Task<ApiResponse<string>> UpdateIssueStatusAsync(string issueId, Enums.IssueStatus status)
         {
             var issue = await _context.Issues.FindAsync(issueId);
@@ -222,6 +262,37 @@ namespace TaskManager.Repositories.Services
             await _context.SaveChangesAsync();
 
             return ApiResponseHelper.Success("Issue Status updated successfully");
+        }
+
+        public async Task<ApiResponse<string>> ChangeIssueAssigneeAsync(string issueId, string assigneeId)
+
+        {
+            var issue = await _context.Issues.FindAsync(issueId);
+
+            if (issue == null || issue.IsDeleted)
+            {
+                return ApiResponseHelper.Error<string>(new List<ApiError>
+                {
+                    new ApiError{ Field = "Issue", Message = "Issue not found"}
+});
+            }
+
+            var assignee = await _context.Users.FindAsync(assigneeId);
+
+            if (assignee == null)
+            {
+                return ApiResponseHelper.Error<string>(new List<ApiError>
+        {
+            new ApiError { Field = "AssigneeId", Message = "Assignee not found" }
+        });
+            }
+
+            issue.AssigneeId = assigneeId;
+
+            _context.Issues.Update(issue);
+            await _context.SaveChangesAsync();
+
+            return ApiResponseHelper.Success("Issue Assignee updated successfully");
         }
     }
 }

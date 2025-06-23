@@ -1,21 +1,9 @@
-﻿using Azure.Core;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using TaskManager.DataContext.Models;
-using TaskManager.Repositories.Interfaces;
-using TaskManager.Repositories.Services;
-using System.Text.Json.Serialization;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using TaskManager.DataContext;
-using TaskManager.DataContext.Models;
-using TaskManager.Helpers;
 using TaskManager.Repositories.Interfaces;
 using TaskManager.Repositories.Services;
 
@@ -28,7 +16,7 @@ namespace TaskManager
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddDbContext<AppDbContext>(options =>
-                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")).EnableSensitiveDataLogging().EnableDetailedErrors());
             builder.Services.AddControllers();
 
             builder.Services.AddSwaggerGen();
