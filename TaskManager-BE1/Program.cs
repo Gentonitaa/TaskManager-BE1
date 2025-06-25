@@ -102,12 +102,12 @@ namespace TaskManager
                      ValidateAudience = true,
                      ValidateLifetime = true,
                      ValidateIssuerSigningKey = true,
-                     ValidIssuer = builder.Configuration.GetSection("Jwt:Issuer").Value,
-                     ValidAudience = builder.Configuration.GetSection("Jwt:Audience").Value,
-                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("Jwt:Key").Value)),
+                     ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                     ValidAudience = builder.Configuration["Jwt:Audience"],
+                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
                      ClockSkew = TimeSpan.Zero
-
                  };
+
 
              });
 
