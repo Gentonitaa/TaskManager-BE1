@@ -7,5 +7,6 @@
         public string LastName { get; set; }
         public DateTime Birthdate { get; set; }
         public string Token { get; set; }
+        public List<string> Roles { get; set; }
     }
 }

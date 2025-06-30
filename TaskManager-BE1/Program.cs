@@ -6,19 +6,25 @@ using System.Text;
 using TaskManager.DataContext.Models;
 using TaskManager.Repositories.Interfaces;
 using TaskManager.Repositories.Services;
+using Microsoft.Extensions.DependencyInjection;
+using System.Threading.Tasks;
 
 namespace TaskManager
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            //database
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")).EnableSensitiveDataLogging().EnableDetailedErrors());
+           
+            //controllers
             builder.Services.AddControllers();
 
+            //swagger
             builder.Services.AddSwaggerGen(c => 
             {
                 c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
@@ -46,6 +52,8 @@ namespace TaskManager
                   }
               });
             });
+
+            //dependency injection
             builder.Services.AddScoped<IAuthRepository, AuthRepository>();
             builder.Services.AddScoped<IJwtToken, JwtToken>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -115,7 +123,11 @@ namespace TaskManager
 
 
             var app = builder.Build();
+
+            //enable cors
             app.UseCors(x => x.AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin());
+           
+            
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
@@ -131,6 +143,50 @@ namespace TaskManager
             app.UseAuthorization();
 
             app.MapControllers();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+                var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
+
+                string[] roles = { "User", "Admin" };
+
+                foreach (var role in roles)
+                {
+                    if (!await roleManager.RoleExistsAsync(role))
+                    {
+                        await roleManager.CreateAsync(new IdentityRole(role));
+                    }
+                }
+
+                var adminEmail = configuration["AdminSettings:Email"];
+                var adminPassword = configuration["AdminSettings:Password"];
+
+                var adminUser = await userManager.FindByEmailAsync(adminEmail);
+
+                if (adminUser == null)
+                {
+                    var newAdmin = new User
+                    {
+                        UserName = "admin",
+                        Email = adminEmail,
+                        FirstName = "Admin",
+                        LastName = "User",
+                        BirthDate = new DateTime(1990, 1, 1),
+                        EmailConfirmed = true
+                    };
+
+                    var result = await userManager.CreateAsync(newAdmin, adminPassword);
+
+                    if (result.Succeeded)
+                    {
+                        await userManager.AddToRoleAsync(newAdmin, "Admin");
+                    }
+                }
+            }
+
+
             app.Run();
 
 

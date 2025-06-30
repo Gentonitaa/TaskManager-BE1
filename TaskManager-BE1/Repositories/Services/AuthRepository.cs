@@ -49,6 +49,9 @@ namespace TaskManager.Repositories.Services
                  new ApiError{Field = "password", Message="Email or pasword is incorrect"}
                 });
 
+            //generate roles
+            var roles = (await _usermanager.GetRolesAsync(user)).ToList();
+
             //generate token
             var token = _jwtToken.GenerateToken(user);
 
@@ -58,7 +61,8 @@ namespace TaskManager.Repositories.Services
                 FirstName = user.FirstName,
                 Birthdate=user.BirthDate,
                 LastName = user.LastName,
-                Token = token
+                Token = token,
+                Roles=roles
             };
 
             return ApiResponseHelper.Success<UserResponseDto>(userResponse);

@@ -35,6 +35,7 @@ namespace TaskManager.Controllers
 
         // ********************** GET ALL USERS ******************************
         [HttpGet("users")]
+        [Authorize(Roles ="Admin")]
         public async Task<IActionResult> GetAllUsers()
         {
             var result = await _userRepository.GetAllUsersAsync();
