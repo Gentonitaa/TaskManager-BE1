@@ -60,6 +60,7 @@
 		<PackageReference Include="Microsoft.OpenApi" Version="1.6.24" />
 		<PackageReference Include="Microsoft.SqlServer.Server" Version="1.0.0" />
 		<PackageReference Include="Microsoft.Win32.SystemEvents" Version="9.0.5" />
+		<PackageReference Include="MongoDB.Driver" Version="3.4.0" />
 		<PackageReference Include="Mono.TextTemplating" Version="3.0.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.1" />

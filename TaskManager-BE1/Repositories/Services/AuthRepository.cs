@@ -33,40 +33,44 @@ namespace TaskManager.Repositories.Services
         {
             if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
                 return ApiResponseHelper.Error<UserResponseDto>(new List<ApiError> {
-                 new ApiError{Field = "email", Message="Email is required"}
-                });
-
+            new ApiError{Field = "email", Message = "Email is required"}
+        });
 
             var user = await _usermanager.FindByEmailAsync(email);
             if (user == null)
                 return ApiResponseHelper.Error<UserResponseDto>(new List<ApiError> {
-                 new ApiError{Field = "user", Message="User does not exist"}
-                });
+            new ApiError{Field = "user", Message = "User does not exist"}
+        });
 
             var result = await _signinmanager.CheckPasswordSignInAsync(user, password, false);
             if (!result.Succeeded)
                 return ApiResponseHelper.Error<UserResponseDto>(new List<ApiError> {
-                 new ApiError{Field = "password", Message="Email or pasword is incorrect"}
-                });
+            new ApiError{Field = "password", Message = "Email or password is incorrect"}
+        });
 
-            //generate roles
+
+            user.LastLogin = DateTime.UtcNow;
+            await _usermanager.UpdateAsync(user);
+
+
             var roles = (await _usermanager.GetRolesAsync(user)).ToList();
 
-            //generate token
             var token = _jwtToken.GenerateToken(user);
 
             var userResponse = new UserResponseDto
             {
                 Username = user.UserName,
                 FirstName = user.FirstName,
-                Birthdate=user.BirthDate,
                 LastName = user.LastName,
+                Birthdate = user.BirthDate,
                 Token = token,
-                Roles=roles
+                Roles = roles,
+                LastLogin = user.LastLogin
             };
 
             return ApiResponseHelper.Success<UserResponseDto>(userResponse);
         }
+
 
         public async Task<ApiResponse<string>> Register(RegisterRequestDto registerRequestDto)
         {

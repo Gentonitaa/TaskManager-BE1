@@ -1,41 +1,38 @@
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using TaskManager.DataContext.Models;
 using TaskManager.DTOs.UserDto;
 using TaskManager.Repositories.Interfaces;
-using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
-using TaskManager.DTOs.UserDto;
-using TaskManager.Repositories.Interfaces;
-using TaskManager.Repositories.Services;
 
 namespace TaskManager.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class UsersController(IUserRepository userRepository) : ControllerBase
+    public class UsersController : ControllerBase
     {
-        private readonly IUserRepository _userRepository = userRepository;
+        private readonly IUserRepository _userRepository;
 
-        // ********************** CHANGE PASSWORD ******************************
+        public UsersController(IUserRepository userRepository)
+        {
+            _userRepository = userRepository;
+        }
+
         [HttpPost("change-password")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequestDto changePasswordDto)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            //var authHeader = Request.Headers["Authorization"].ToString();
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized("User is not authenticated");
 
-            //    var token = authHeader.Substring("Bearer ".Length).Trim();
-
-            var result = await _userRepository.ChangePassword(userId, changePasswordDto/*, token*/);
+            var result = await _userRepository.ChangePassword(userId, changePasswordDto);
             return Ok(result);
         }
 
-        // ********************** GET ALL USERS ******************************
         [HttpGet("users")]
-        [Authorize(Roles ="Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllUsers()
         {
             var result = await _userRepository.GetAllUsersAsync();

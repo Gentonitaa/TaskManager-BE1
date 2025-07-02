@@ -8,5 +8,6 @@
         public DateTime Birthdate { get; set; }
         public string Token { get; set; }
         public List<string> Roles { get; set; }
+        public DateTime? LastLogin { get; set; }
     }
 }
