@@ -8,5 +8,7 @@ namespace TaskManager.DataContext.Models
         public string LastName { get; set; }
         public DateTime BirthDate { get; set; }
         public DateTime? LastLogin { get; internal set; }
+        public virtual ICollection<UserRole> UserRoles { get; set; }
+
     }
 }

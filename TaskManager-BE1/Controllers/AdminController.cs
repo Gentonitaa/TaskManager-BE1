@@ -12,6 +12,7 @@ namespace TaskManager.Controllers
         private readonly IUserRepository _userRepository = userRepository;
 
         [HttpGet("users")]
+        [Authorize]
         public async Task<IActionResult> GetAllUsers()
         {
             var result = await _userRepository.GetAllUsersAsync();
@@ -21,5 +22,6 @@ namespace TaskManager.Controllers
 
             return Ok(result);
         }
+
     }
 }

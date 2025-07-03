@@ -16,11 +16,13 @@ namespace TaskManager.Repositories.Services
     public class UserRepository : IUserRepository
     {
         private readonly UserManager<User> _userManager;
+        private readonly AppDbContext _context;
         //private readonly JwtCheck _jwtCheck;
 
-        public UserRepository(UserManager<User> userManager/*, JwtCheck jwtCheck */)
+        public UserRepository(UserManager<User> userManager/*, JwtCheck jwtCheck */, AppDbContext context)
         {
             _userManager = userManager;
+            _context = context;
             //_jwtCheck = jwtCheck;
         }
 
@@ -58,19 +60,28 @@ namespace TaskManager.Repositories.Services
         // ********************** GET ALL USERS ******************************
         public async Task<ApiResponse<List<GetAllUsersDto>>> GetAllUsersAsync()
         {
-            var users = await _userManager.Users.Select(i => new GetAllUsersDto
-            {
-                Id = i.Id,
-                FullName = i.FirstName + " " + i.LastName
-            }).ToListAsync();
+            var users = await _userManager.Users
+                .Include(u => u.UserRoles)
+                .ThenInclude(ur => ur.Role)
+                .ToListAsync();
 
-            return ApiResponseHelper.Success(users);
+            var userList = users.Select(user => new GetAllUsersDto
+            {
+                Id = user.Id,
+                FullName = user.FirstName + " " + user.LastName,
+                Email = user.Email,
+                Roles = user.UserRoles.Select(ur => ur.Role.Name).ToList()
+            }).ToList();
+
+            return ApiResponseHelper.Success(userList);
+        }
+      
+
+
+        public async Task<User?> GetUserByIdAsync(Guid userId)
+        {
+            return await _context.Users.FindAsync(userId);
         }
 
-
-
     }
-
-
-
 }

@@ -32,7 +32,6 @@ namespace TaskManager.Controllers
                 return BadRequest(result);
 
             return CreatedAtAction(nameof(GetIssueById), new { id = result.Data.Id }, result);
-
         }
 
         [HttpPut("{id}")]
@@ -45,6 +44,18 @@ namespace TaskManager.Controllers
 
             return Ok(result);
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteIssue(string id)
+        {
+            var result = await _issueRepository.DeleteIssueAsync(id);
+
+            if (!result.Status)
+                return BadRequest(result);
+
+            return Ok(result);
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetIssueById(string id)
         {

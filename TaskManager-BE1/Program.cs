@@ -17,20 +17,23 @@ namespace TaskManager
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // SQL Server Database
+            // SQL Server
             builder.Services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
-                    .EnableSensitiveDataLogging()
-                    .EnableDetailedErrors());
+                options.UseSqlServer(
+                    builder.Configuration.GetConnectionString("DefaultConnection"),
+                    sqlOptions => sqlOptions.CommandTimeout(180) 
+                )
+                .EnableSensitiveDataLogging()
+                .EnableDetailedErrors());
 
-            // MongoDB Configuration
+            // MongoDB
             builder.Services.Configure<MongoDBSettings>(builder.Configuration.GetSection("MongoDBSettings"));
             builder.Services.AddSingleton<MongoDbService>();
 
             // Controllers
             builder.Services.AddControllers();
 
-            // Swagger Configuration
+            // Swagger
             builder.Services.AddSwaggerGen(c =>
             {
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -40,7 +43,7 @@ namespace TaskManager
                     Scheme = "Bearer",
                     BearerFormat = "JWT",
                     In = ParameterLocation.Header,
-                    Description = "Enter your token in the text input below.\n\nExample: 'Bearer 12345abcdef'",
+                    Description = "Enter 'Bearer <token>'"
                 });
 
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -54,7 +57,7 @@ namespace TaskManager
                                 Id = "Bearer"
                             }
                         },
-                        new string[] { }
+                        Array.Empty<string>()
                     }
                 });
             });
@@ -67,16 +70,15 @@ namespace TaskManager
             builder.Services.AddSingleton<JwtCheck>();
 
             // Identity
-            builder.Services.AddIdentity<User, IdentityRole>()
+            builder.Services.AddIdentity<User, Role>()
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
 
-            // JWT Authentication
+            // JWT Auth
             builder.Services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
             })
             .AddJwtBearer(options =>
             {
@@ -87,24 +89,12 @@ namespace TaskManager
                         Console.WriteLine($"Authentication failed: {context.Exception.Message}");
                         return Task.CompletedTask;
                     },
-                    OnTokenValidated = async context =>
+                    OnTokenValidated = context =>
                     {
-                        var jwtChecker = context.HttpContext.RequestServices.GetRequiredService<JwtCheck>();
-                        var authHeader = context.HttpContext.Request.Headers["Authorization"].ToString();
-                        if (!string.IsNullOrEmpty(authHeader) && authHeader.StartsWith("Bearer "))
-                        {
-                            var token = authHeader.Substring("Bearer ".Length).Trim();
-                            var exist = jwtChecker.Check(token);
-                            if (exist)
-                            {
-                                context.Fail("Unauthorized");
-                                return;
-                            }
-                        }
-
                         Console.WriteLine("Token validated successfully.");
-                        return;
+                        return Task.CompletedTask;
                     }
+
                 };
 
                 options.TokenValidationParameters = new TokenValidationParameters
@@ -118,6 +108,7 @@ namespace TaskManager
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
                     ClockSkew = TimeSpan.Zero
                 };
+
             });
 
             builder.Services.AddAuthorization();
@@ -127,7 +118,7 @@ namespace TaskManager
             // CORS
             app.UseCors(x => x.AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin());
 
-            // Swagger
+            // Middleware
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
@@ -137,32 +128,38 @@ namespace TaskManager
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseStaticFiles();
-
             app.UseAuthentication();
             app.UseAuthorization();
-
             app.MapControllers();
 
-            // Seed Roles and Admin User
+            // Seed roles and admin
             using (var scope = app.Services.CreateScope())
             {
-                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<Role>>();
                 var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
                 var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
 
                 string[] roles = { "User", "Admin" };
-
                 foreach (var role in roles)
                 {
-                    if (!await roleManager.RoleExistsAsync(role))
+                    try
                     {
-                        await roleManager.CreateAsync(new IdentityRole(role));
+                        if (!await roleManager.RoleExistsAsync(role))
+                        {
+                            var result = await roleManager.CreateAsync(new Role { Name = role });
+                            Console.WriteLine(result.Succeeded
+                                ? $" Roli '{role}' u krijua me sukses."
+                                : $" Gabim gjatë krijimit të rolit '{role}'");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($" Exception gjatë krijimit të rolit '{role}': {ex.Message}");
                     }
                 }
 
                 var adminEmail = configuration["AdminSettings:Email"];
                 var adminPassword = configuration["AdminSettings:Password"];
-
                 var adminUser = await userManager.FindByEmailAsync(adminEmail);
 
                 if (adminUser == null)
@@ -181,6 +178,16 @@ namespace TaskManager
                     if (result.Succeeded)
                     {
                         await userManager.AddToRoleAsync(newAdmin, "Admin");
+                        Console.WriteLine("Admin u krijua me sukses.");
+                    }
+                }
+                else
+                {
+                    var rolesOfAdmin = await userManager.GetRolesAsync(adminUser);
+                    if (!rolesOfAdmin.Contains("Admin"))
+                    {
+                        await userManager.AddToRoleAsync(adminUser, "Admin");
+                        Console.WriteLine(" Roli 'Admin' iu caktua adminit ekzistues.");
                     }
                 }
             }

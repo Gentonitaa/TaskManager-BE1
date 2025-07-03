@@ -18,7 +18,7 @@ namespace TaskManager.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateLog(UserLog log)
         {
-            log.Id = null;                // Vendos Id=null që MongoDB ta gjenerojë automatikisht
+            log.Id = null;               
             log.Timestamp = DateTime.UtcNow;
             await _mongoDbService.CreateLogAsync(log);
             return Ok("Log created.");
@@ -38,7 +38,6 @@ namespace TaskManager.Controllers
             return Ok(logs);
         }
 
-        // Ky endpoint simulon login dhe regjistron log automatikisht
         [HttpPost("simulate-login")]
         public async Task<IActionResult> SimulateLogin([FromBody] string userId)
         {

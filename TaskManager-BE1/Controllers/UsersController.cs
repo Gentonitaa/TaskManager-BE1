@@ -32,7 +32,7 @@ namespace TaskManager.Controllers
         }
 
         [HttpGet("users")]
-        [Authorize(Roles = "Admin")]
+        [Authorize]
         public async Task<IActionResult> GetAllUsers()
         {
             var result = await _userRepository.GetAllUsersAsync();
@@ -42,5 +42,6 @@ namespace TaskManager.Controllers
 
             return Ok(result);
         }
+
     }
 }
